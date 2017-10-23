@@ -1,0 +1,2 @@
+Este é um exemplo de conteúdo em ficheiro de texto com {field} editáveis.
+Segunda linha.

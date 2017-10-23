@@ -1,0 +1,44 @@
+{
+    "name": "fccn/webapp-tools/translate",
+    "description": "Set of tools to enable translation on web applications",
+    "keywords": ["fccn", "webapp-tools", "gettex"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Paulo Costa",
+            "email": "paulo.costa@fccn.pt"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "fccn/webapp-tools/common": "^v1.0",
+        "slim/twig-view": "^2.3",
+        "twig/extensions": "^1.5"
+    },
+    "autoload":{
+      "psr-4": {
+        "Fccn\\Lib\\": "src"
+      }
+    },
+    "require-dev": {
+        "codeception/codeception": "^2.3"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fccn\\Tests\\": "tests/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@gitlab.fccn.pt:PCosta/wt-common.git"
+        }
+    ],
+    "config": {
+        "process-timeout" : 0
+    },
+    "scripts": {
+        "test": "codecept run unit"
+    }
+
+}
