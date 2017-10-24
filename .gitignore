@@ -1,3 +1,5 @@
 vendor/**
 tests/_data/cache/**
 tests/_output/logs/**
+tests/locale/Makefile
+tests/locale/header.po

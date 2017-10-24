@@ -17,7 +17,7 @@ $c = array(
   "locale_textdomain"  => "messages",
   "locale_path"        => __DIR__."/locale",
   "locale_cookie_name" => "locale",
-  "localeCookieName" => "locale",
-  "locale_cache_template_path" => __DIR__."/templates",
-  "locale_cache_path" => __DIR__."/cache"
+  #twig parser locations
+  "twig_parser_templates_path" => __DIR__."/templates",
+  "twig_parser_cache_path" => __DIR__."/cache"
 );
