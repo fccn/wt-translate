@@ -42,9 +42,10 @@ class Locale
   public function init()
   {
     $current_lang = $this->getCurrentLang();
-    FileLogger::debug('Locale::init() - current lang is '.$current_lang);
+    $locale = $current_lang.".utf8";
+    FileLogger::debug('Locale::init() - current locale is '.$locale);
     // Set language to Current Language
-    $results = putenv('LANG=' . $current_lang . ".utf8");
+    $results = putenv('LANG=' . $locale);
     if(!$results)
     {
       FileLogger::error("Locale::init() - putenv failed");
