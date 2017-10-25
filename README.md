@@ -13,7 +13,7 @@ composer require fccn/webapp-tools/translate
 
 ```
 
-To complete the installation copy the contents of the **locale** and **utils** folder into the root of your project. These folders contain the utilities for reading the gettext references and parsing the twig files.
+To complete the installation copy the contents of the **locale** and **utils** folder into **[project_root]/locale** and **[project_root]/utils** respectively. These folders contain the utilities for reading the gettext references and parsing the twig files.
 
 ### Locale folder
 
@@ -37,7 +37,7 @@ This file is called by the Makefile and needs to be located in **[project_root]/
 
 ## Configuration
 
-The localization utilities were designed with the FCCN's webapp skeleton project in mind. For that reason the Makefile in **locale** will search for the web application code in the app folder on the project's root. If your application's code is stored on another folder you need to edit the Makefile before using it.
+The localization utilities were designed with the FCCN's webapp skeleton project in mind. For this reason the script to build the .po and .mo files will search for the web application code in **[project_root]/app** folder. If your application's code is stored on another folder you need to edit the **[project_root]/locale/Makefile** before using the Gettext utilities.
 
 The following key-value pairs need to be added to the application configuration file *$c* array:
 ```php
