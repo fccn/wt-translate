@@ -19,6 +19,8 @@ class TranslateConfigurationLoader
   {
     //i18n extension
     $twig->addExtension(new \Twig_Extensions_Extension_I18n());
+    //localization extension
+    $twig->addExtension(new Twig_Extensions_Extension_Intl());
     $filter = new \Twig_SimpleFilter("translate", function($stdClassObject) {
       return null;
     });
