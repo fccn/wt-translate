@@ -42,17 +42,28 @@ class Locale
   public function init()
   {
     $current_lang = $this->getCurrentLang();
-
+    FileLogger::debug('Locale::init() - current lang is '.$current_lang);
     // Set language to Current Language
-    putenv('LANG=' . $current_lang . ".utf8");
-    setlocale(LC_MESSAGES, $current_lang);
+    $results = putenv('LANG=' . $current_lang . ".utf8");
+    if(!$results)
+    {
+      FileLogger::error("Locale::init() - putenv failed");
+    }
+    $results = setlocale(LC_MESSAGES, $current_lang);
+    if(!$results)
+    {
+      FileLogger::error("Locale::init() - setlocale failed: locale function is not available on this platform, or the given local does not exist in this environment");
+    }
 
     // Specify the location of the translation tables
-    bindtextdomain(SiteConfig::getInstance()->get("locale_textdomain"), SiteConfig::getInstance()->get("locale_path"));
-    bind_textdomain_codeset(SiteConfig::getInstance()->get("locale_textdomain"), 'UTF-8');
+    $results = bindtextdomain(SiteConfig::getInstance()->get("locale_textdomain"), SiteConfig::getInstance()->get("locale_path"));
+    FileLogger::debug("Locale::init() - new text domain is set: $results");
+    $results = bind_textdomain_codeset(SiteConfig::getInstance()->get("locale_textdomain"), 'UTF-8');
+    FileLogger::debug("Locale::init() - new text domain codeset is: $results");
 
     // Choose domain
-    textdomain(SiteConfig::getInstance()->get("locale_textdomain"));
+    $results = textdomain(SiteConfig::getInstance()->get("locale_textdomain"));
+    FileLogger::debug("Locale::init() - current message domain is set: $results");
   }
 
   public function getCurrentLang()
