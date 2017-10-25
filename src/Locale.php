@@ -32,7 +32,14 @@ class Locale
     return self::getLabelFromLocale(SiteConfig::getInstance()->get("defaultLocaleLabel"));
   }
 
-  public function __construct()
+  public function __construct(){
+
+  }
+
+  /*
+  * Initializes the locale and configures Gettext
+  */
+  public function init()
   {
     $current_lang = $this->getCurrentLang();
 
