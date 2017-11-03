@@ -120,22 +120,42 @@ The following shows the different use cases for the language utilities.
 
 ### Translate HTML content
 
-Put the translated HTML snippets on **locale/[country_id]/html/** folder. The snippets must have the same name on all language folders. To obtain the translated HTML content from a snippet on file named *my_snippet.html* do as follows:
+Put the translated HTML snippets on **locale/[country_id]/html/** folder. The snippets must have the same name on all language folders. For example, to print the en_EN HTML content from a snippet on  **locale/en_EN/html/my_snippet.html**, whose contents are:
+```html
+<div class="col-md-12">
+<p>This is a tranlated html snipped</p>
+</div>
+```
+ you should do as follows, after setting the locale to en_EN:
 ```php
 
   $locale = new \Fccn\Lib\Locale();
   $html_content = $locale->getHtmlContent('my_snippet');
-
+  echo $html_content
+```
+this in turn prints out
+```
+<div class="col-md-12">
+<p>This is a tranlated html snipped</p>
+</div>
 ```
 
 ### Translate text content
 
-Put the translated snippets on **locale/[country_id]/files/** folder. The snippets must have the same name on all language folders. To obtain the translated content from a snippet on file named *my_snippet.txt* do as follows:
+Put the translated snippets on **locale/[country_id]/files/** folder. The snippets must have the same name on all language folders. For example, to print the en_EN content from a snippet on  **locale/en_EN/files/my_snippet.txt**, whose contents are:
+```
+This is a sample snippet of translated text
+```
+you should do as follows after setting the locale to en_EN:
 ```php
 
   $locale = new \Fccn\Lib\Locale();
-  $html_content = $locale->getFileContent('my_snippet');
-
+  $text_content = $locale->getFileContent('my_snippet');
+  echo $text_content
+```
+this in turn prints out
+```
+This is a sample snippet of translated text
 ```
 
 It is possible to include variables in the translated text snippets. The variables are represented inside brackets {} (i.e, {name}). For example if you want the snippet to adapt to the user's name you can define en_EN version of the snippet in **locale/en_EN/files/hello_user.txt**:
@@ -143,12 +163,16 @@ It is possible to include variables in the translated text snippets. The variabl
 Hello {user_name}.
 
 ```
-To get the content with the instantiated variable:
+To get the content with the instantiated variable you should do as follows after setting the locale to en_EN:
 ```php
 
   $locale = new \Fccn\Lib\Locale();
-  $html_content = $locale->processFile('hello_user',array("{user_name}" => "New User"));
-
+  $text_content = $locale->processFile('hello_user',array("{user_name}" => "New User"));
+  echo $text_content
+```
+this in turn prints out
+```
+Hello New User
 ```
 
 ### Gettext translations
