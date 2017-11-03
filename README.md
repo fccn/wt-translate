@@ -1,5 +1,5 @@
 
-### Localization utilities
+### Webapp tools - localization utilities
 
 This presents a set of utilities for handling multilanguage and translations for web applications. It adds Gettext support to the web application and configures Gettext with settings defined in the application configuration file. It also supports document translations and full HTML page translations.
 
