@@ -18,9 +18,10 @@
 
 class TwigConfigLoader
 {
-  /* invoques twig configuration loaders */
-  public function loadConfigs($twig){
-    \Fccn\Lib\TranslateConfigurationLoader::loadTwigConfigs($twig);
-    //additional loaders below...
-  }
+    /* invoques twig configuration loaders */
+    public function loadConfigs($twig)
+    {
+        \Fccn\Lib\TranslateConfigurationLoader::loadTwigConfigs($twig);
+        //additional loaders below...
+    }
 }

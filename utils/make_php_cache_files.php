@@ -27,8 +27,8 @@
 
   require 'TwigConfigLoader.php';
 
-  if(!defined('CONFIG_FILE')){
-    define("CONFIG_FILE", __DIR__ . "/../app/config.php");
+  if (!defined('CONFIG_FILE')) {
+      define("CONFIG_FILE", __DIR__ . "/../app/config.php");
   }
 
   \Fccn\Lib\TwigParser::parse(new TwigConfigLoader());
