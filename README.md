@@ -1,9 +1,9 @@
 
 ### Localization utilities
 
-This presents a set of utilities for handling multilanguage and translations for web applications. It adds Gettext support to the web application and configures Gettext extension with the settings defined in the application configuration file. It also supports document translations and full HTML page translations.
+This presents a set of utilities for handling multilanguage and translations for web applications. It adds Gettext support to the web application and configures Gettext with settings defined in the application configuration file. It also supports document translations and full HTML page translations.
 
-The localization utilities also provide integration with the twig framework, through a twig filter and a utility for parsing twig pages into a format that is understandable by Gettext.
+The localization utilities contains an utility to prepare and launch xgettext via Makefile and provides integration with the twig framework, via a twig filter and a utility for parsing twig templates into a format that is understandable by xgettext.
 
 ## Installation
 
@@ -13,11 +13,11 @@ composer require fccn/webapp-tools/translate
 
 ```
 
-To complete the installation copy the contents of the **locale** and **utils** folder into **[project_root]/locale** and **[project_root]/utils** respectively. These folders contain the utilities for reading the gettext references and parsing the twig files.
+To complete the installation copy the contents of the **locale** and **utils** folder into **[project_root]/locale** and **[project_root]/utils** respectively. These folders contain the utilities for preparing and launching xgettext and parsing the twig files.
 
 ### Locale folder
 
-The Makefile inside the locale folder collects the gettext references from the project's code and builds the .po and .mo files. It must be located at the root of the **locale** folder.
+The Makefile inside the locale folder prepares the content to be processed by xgettex and calls xgettext to builds the .po and .mo files. It is configured to work inside the **locale** directory, looks for php code on **[project_root]/app** folder and the parsed twig templates on **[project_root]/cache**.
 
 The header.po file is the base file for generating the individual .po files for each language. This file must be locate in the root of the **locale** folder.
 
@@ -32,8 +32,7 @@ The locale folder already contains pre built language folders for pt_PT and en_E
 
 ### Utils folder
 
-The utils folder contains a php script that calls configures and calls the gettext twig parser.
-This file is called by the Makefile and needs to be located in **[project_root]/utils/make_php_cache_files.php**. After copying the file to that location you can adapt it to fit your needs. To add twig extensions or filters edit the **[project_root]/utils/TwigConfigLoader.php**.
+When using the Twig integration, there will be a point where it is necessary to extract the template strings. Unfortunately, the xgettext utility does not understand Twig templates natively. For that reason the script in **[project_root]/utils/make_php_cache_files.php** converts Twig templates to PHP files, so that xgettext can be called on the template cache instead. The script requires Twig to be configured in the same way as is it used on the application. You can add the required Twig extensions and filters in the **[project_root]/utils/TwigConfigLoader.php** file.
 
 ## Configuration
 
@@ -60,21 +59,21 @@ $c = array(
 
     #-twig parser configurations
     "twig_parser_templates_path" => "../templates",   #path for twig templates folder
-    "twig_parser_cache_path" => "../cache"            #path for cache folder
+    "twig_parser_cache_path" => "../cache",            #path for cache folder
     ...
   )
 ```
 
-Add the twig extensions and filters used in the web application to the twig parser. This prevents missinterpretations when parsing the twig templates. To do that edit **[project_root]/utils/TwigConfigLoader.php** and add the filters and extensions to the *loadConfigs* function:
+To configure with twig, add the twig extensions and filters used in the web application to the twig parser. This prevents missinterpretations when parsing the twig templates. To do that edit **[project_root]/utils/TwigConfigLoader.php** and add the filters and extensions to the *loadConfigs* function:
 ```php
   public function loadConfigs($twig){
     ....
 
     #add the i18n extensions
-    $twig->addExtension(new Twig_Extensions_Extension_I18n());
+    $twig->addExtension(new Twig_Extensions_some_extension());
 
     #add translate filter
-    $filter = new Twig_SimpleFilter("translate", function($stdClassObject) {
+    $filter = new Twig_SimpleFilter("my filter", function($stdClassObject) {
         return null;
     }),
     $twig->addFilter($filter);
@@ -82,18 +81,36 @@ Add the twig extensions and filters used in the web application to the twig pars
     ...
   }
 ```
-You can also call preset configuration loaders like the one defined in **src/TranslateConfigurationLoader.php**. The TwigConfigLoader already loads the filters and extensions provided by the localization utilities.
+You can also call preset configuration loaders like the one defined in **src/TranslateConfigurationLoader.php**. The *loadConfigs()* function in **[project_root]/utils/TwigConfigLoader.php** already loads the following set of filters and extensions for localization utilities:
+- Twig_Extensions_Extension_I18n - Twig internationalization extension
+- Twig_Extensions_Extension_Intl - Twig date and time localization extension
+- Translate filter
+
+The localization utilities can be included into a Slim middleware, like in the example below.
+```php
+
+$app = new \Slim\App();
+
+$app->add(function ($request, $response, $next) {
+  $locale = new \Fccn\Lib\Locale();
+  $locale->init();
+	$response = $next($request, $response);
+	return $response;
+});
+
+```
 
 ### Add more languages
 
 To create additional languages do as follows inside the **locale** folder:
 
-1. Add a new directory with country ID. **mkdir -p es_ES/LC_MESSAGES**
-1. Copy the header file to the directory. **cp header.po es_ES/LC_MESSAGES/messages.po**
-1. Create the directories to hold the rest of the files to translate. **mkdir es_ES/files; mkdir es_ES/html**
-1. Clean cache. **make clean**
-1. Update message files. **make**
-1. Edit the po file and translate it. **vi es_ES/LC_MESSAGES/messages.po**
+1. Add a new directory with country ID. ``mkdir -p es_ES/LC_MESSAGES``
+1. Copy the header file to the directory. ``cp header.po es_ES/LC_MESSAGES/messages.po``
+1. Create the directories to hold the rest of the files to translate. ``mkdir es_ES/files; mkdir es_ES/html``
+1. Clean cache. ``make clean``
+1. Update message files. ``make``
+1. Edit the po file and translate it. ``vi es_ES/LC_MESSAGES/messages.po``
+ 1. Do not forget to assign language, i.e. **"Language: es_ES\n"**
 1. Update message files. **make**
 1. Edit the application configuration file, add the new language to the *locales* array.
 
@@ -161,3 +178,15 @@ To refresh the translated contents run ``make clean && make`` on the **locale** 
 ## Testing
 
 This project uses codeception for testing. To run the tests call ``composer test`` on the root of the project folder.
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/fccn/wt-translate/tags).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
