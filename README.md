@@ -3,7 +3,7 @@
 
 This presents a set of utilities for handling multilanguage and translations for web applications. It adds Gettext support to the web application and configures Gettext with settings defined in the application configuration file. It also supports document translations and full HTML page translations.
 
-The localization utilities contains an utility to prepare and launch xgettext via Makefile and provides integration with the twig framework, via a twig filter and a utility for parsing twig templates into a format that is understandable by xgettext.
+The localization utilities also provides an utility to prepare and launch xgettext via Makefile and  integrates with the twig framework, via a twig filter and a utility for parsing twig templates into a format that is understandable by xgettext.
 
 ## Installation
 
@@ -17,11 +17,11 @@ To complete the installation copy the contents of the **locale** and **utils** f
 
 ### Locale folder
 
-The Makefile inside the locale folder prepares the content to be processed by xgettex and calls xgettext to builds the .po and .mo files. It is configured to work inside the **locale** directory, looks for php code on **[project_root]/app** folder and the parsed twig templates on **[project_root]/cache**.
+The Makefile inside the locale folder prepares the content to be processed by xgettex and calls xgettext to build the .po and .mo files. It is configured to work inside the **locale** directory, looks for php code on **[project_root]/app** folder and the parsed twig templates on **[project_root]/cache**.
 
-The header.po file is the base file for generating the individual .po files for each language. This file must be locate in the root of the **locale** folder.
+The header.po file is the base file for generating the individual .po files for each language. This file must be located in the **locale** folder.
 
-The locale folder also holds the translation files. Each language must have its own content folder. The folder must be named with the country ID (i.e pt_PT). Inside each language folder there must be following structure:
+The locale folder also holds the translation files. Each language must have its own content folder. The folder must be named with the country ID (i.e pt_PT). Each language folder must have following structure:
 
 - **[country ID]/**
  - **files/** - location for document translations
@@ -32,13 +32,13 @@ The locale folder already contains pre built language folders for pt_PT and en_E
 
 ### Utils folder
 
-When using the Twig integration, there will be a point where it is necessary to extract the template strings. Unfortunately, the xgettext utility does not understand Twig templates natively. For that reason the script in **[project_root]/utils/make_php_cache_files.php** converts Twig templates to PHP files, so that xgettext can be called on the template cache instead. The script requires Twig to be configured in the same way as is it used on the application. You can add the required Twig extensions and filters in the **[project_root]/utils/TwigConfigLoader.php** file.
+If you use Twig in your web application, there will be a point where it is necessary to extract the template strings from the twig template files. Unfortunately, the xgettext utility does not understand Twig templates natively. For that reason the script in **[project_root]/utils/make_php_cache_files.php** converts Twig templates to PHP files, so that xgettext can be called on those files instead. The script requires Twig to have the same configurations as you define in your web application. You can edit the **[project_root]/utils/TwigConfigLoader.php** file to load the required Twig extensions and filters in the **make_php_cache_files.php** script.
 
 ## Configuration
 
-The localization utilities were designed with the FCCN's webapp skeleton project in mind. For this reason the script to build the .po and .mo files will search for the web application code in **[project_root]/app** folder. If your application's code is stored on another folder you need to edit the **[project_root]/locale/Makefile** before using the Gettext utilities.
+The localization utilities were designed with the [FCCN's webapp skeleton project](https://github.com/fccn/webapp-skeleton.git) in mind. For this reason the script to build the .po and .mo files will search for the web application code in **[project_root]/app** folder. If your application's code is stored on another location you need to edit the **[project_root]/locale/Makefile** before using the Gettext utilities.
 
-The following key-value pairs need to be added to the application configuration file *$c* array:
+The localization utilities makes use of the site configuration loader from the [Webapp Tools - common](https://github.com/fccn/wt-common) project. The following key-value pairs need to be added to the application configuration file *$c* array:
 ```php
 $c = array(
     ...
@@ -64,7 +64,7 @@ $c = array(
   )
 ```
 
-To configure with twig, add the twig extensions and filters used in the web application to the twig parser. This prevents missinterpretations when parsing the twig templates. To do that edit **[project_root]/utils/TwigConfigLoader.php** and add the filters and extensions to the *loadConfigs* function:
+when configuring with twig, you need to load the same twig extensions and filters used by the web application into the twig parser. This prevents missinterpretations when parsing the twig templates. To do that edit **[project_root]/utils/TwigConfigLoader.php** and add the filters and extensions to the *loadConfigs* function:
 ```php
   public function loadConfigs($twig){
     ....
@@ -81,12 +81,12 @@ To configure with twig, add the twig extensions and filters used in the web appl
     ...
   }
 ```
-You can also call preset configuration loaders like the one defined in **src/TranslateConfigurationLoader.php**. The *loadConfigs()* function in **[project_root]/utils/TwigConfigLoader.php** already loads the following set of filters and extensions for localization utilities:
+You can also use preset configuration loaders like the one defined in **src/TranslateConfigurationLoader.php**. The *loadConfigs()* function in **[project_root]/utils/TwigConfigLoader.php** already loads the following set of filters and extensions for localization utilities:
 - Twig_Extensions_Extension_I18n - Twig internationalization extension
 - Twig_Extensions_Extension_Intl - Twig date and time localization extension
 - Translate filter
 
-The localization utilities can be included into a Slim middleware, like in the example below.
+To include the localization utilities into a Slim middleware, you can do like in the example below:
 ```php
 
 $app = new \Slim\App();
@@ -100,7 +100,7 @@ $app->add(function ($request, $response, $next) {
 
 ```
 
-### Add more languages
+### Adding more languages
 
 To create additional languages do as follows inside the **locale** folder:
 
