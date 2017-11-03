@@ -11,9 +11,8 @@
     ],
     "require": {
         "php": ">=5.5.0",
-        "fccn/webapp-tools/common": "^v1.0",
-        "slim/twig-view": "^2.3",
-        "twig/extensions": "^1.5"
+        "fccn/webapp-tools/common": "^1.0",
+        "slim/twig-view": "^2.3"
     },
     "autoload":{
       "psr-4": {
@@ -28,12 +27,6 @@
             "Fccn\\Tests\\": "tests/"
         }
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url":  "git@gitlab.fccn.pt:PCosta/wt-common.git"
-        }
-    ],
     "config": {
         "process-timeout" : 0
     },
