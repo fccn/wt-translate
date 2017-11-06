@@ -1,5 +1,5 @@
 {
-    "name": "fccn/webapp-tools/translate",
+    "name": "fccn/webapp-tools-translate",
     "description": "Set of tools to enable translation on web applications",
     "keywords": ["fccn", "webapp-tools", "gettex"],
     "license": "MIT",
@@ -12,8 +12,7 @@
     "require": {
         "php": ">=5.5.0",
         "fccn/webapp-tools/common": "^1.0",
-        "slim/twig-view": "^2.3",
-        "twig/extensions": "^1.5"
+        "slim/twig-view": "^2.3"
     },
     "autoload":{
       "psr-4": {

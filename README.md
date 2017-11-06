@@ -9,7 +9,7 @@ The localization utilities also provides an utility to prepare and launch xgette
 
 You can install this collection in your project using composer:
 ```
-composer require fccn/webapp-tools/translate
+composer require fccn/webapp-tools-translate
 
 ```
 
