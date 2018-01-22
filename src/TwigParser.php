@@ -15,9 +15,9 @@ class TwigParser
     public static function parse($twig_config_loader = false)
     {
         $config = \Fccn\Lib\SiteConfig::getInstance();
-        $tplDir = $config->get('twig_parser_templates_path');
+        $tplDirList = $config->get('twig_parser_templates_path');
         $tmpDir = $config->get('twig_parser_cache_path').'/';
-        $loader = new \Twig_Loader_Filesystem($tplDir);
+        $loader = new \Twig_Loader_Filesystem($tplDirList);
 
         // force auto-reload to always have the latest version of the template
         $twig = new \Twig_Environment($loader, array(
@@ -30,11 +30,17 @@ class TwigParser
             $twig_config_loader->loadConfigs($twig);
         }
 
-        // iterate over all your templates
-        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($tplDir), \RecursiveIteratorIterator::LEAVES_ONLY) as $file) {
-            // force compilation
-            if ($file->isFile()) {
-                $twig->loadTemplate(str_replace($tplDir.'/', '', $file));
+        if (!is_array($tplDirList)) {
+            $tplDirList = array(0 => $tplDirList);
+        }
+
+        foreach ($tplDirList as $index => $tplDir) {
+            // iterate over all your templates
+            foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($tplDir), \RecursiveIteratorIterator::LEAVES_ONLY) as $file) {
+                // force compilation
+                if ($file->isFile()) {
+                    $twig->loadTemplate(str_replace($tplDir.'/', '', $file));
+                }
             }
         }
 

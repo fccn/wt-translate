@@ -62,7 +62,7 @@ $c = array(
     "request_attribute_name" => "locale", #name of the request attribute to store locale info
 
     #-twig parser configurations
-    "twig_parser_templates_path" => "../templates",   #path for twig templates folder
+    "twig_parser_templates_path" => "../templates",   #path for twig templates folder, can be an array
     "twig_parser_cache_path" => "../cache",            #path for cache folder
     ...
   )
@@ -102,6 +102,20 @@ $app->add(function ($request, $response, $next) {
 	return $response;
 });
 
+```
+
+The twig parser also supports multiple twig templates folder. An example setup with multiple folders is shown below:
+
+```php
+
+$c = array(
+    ...
+    twig_parser_templates_path =>  array(
+      0 => __DIR__ . '/../templates', //set the base template path
+      //add other namespaces to twig, in the form of 'namespace' => 'path/to/twig/templates'
+    ),
+    ...
+  );
 ```
 
 ### Adding more languages
