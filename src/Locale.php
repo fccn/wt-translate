@@ -223,7 +223,22 @@ class Locale
         return $return_file;
     }
 
-    /* -- static helper functions -- */
+    // ------------ simplified getters for current locale -----
+
+    /* returns the current locale info */
+    public function current_locale()
+    {
+        return $this->getCurrentLang();
+    }
+
+    /* returns label for current locale */
+    public function current_lang()
+    {
+        $curr_lcl = $this->current_locale();
+        return self::getLabelFromLocale($curr_lcl);
+    }
+
+    // ----------------- static helper functions --
 
     /**
      * calculates cookie expiration date from seconds
