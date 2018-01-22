@@ -45,6 +45,7 @@ $c = array(
     #----- locale configuration
     "defaultLocale"      => "pt_PT",          # Setup the default locale
     "defaultLocaleLabel" => "PT",             # and default locale label
+    "locale_selection"   => "param",          # locale selection method, can be 'param' if locale to be set up by a url parameter, or 'cookie' if  locale is set up by cookie
 
     #- array of available locales
     "locales"            => array(
@@ -56,6 +57,9 @@ $c = array(
     "locale_textdomain"  => "messages",
     "locale_path"        => "../locale", #path of the locale folder
     "locale_cookie_name" => "locale",    #name of the cookie to store locale information
+    "locale_cookie_path" => "/",     #relative path of the locale cookie
+    "locale_param_name" => "lang",    #name of the URL param to store locale information
+    "request_attribute_name" => "locale", #name of the request attribute to store locale info
 
     #-twig parser configurations
     "twig_parser_templates_path" => "../templates",   #path for twig templates folder

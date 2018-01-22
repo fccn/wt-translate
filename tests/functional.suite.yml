@@ -7,6 +7,11 @@
 
 actor: FunctionalTester
 modules:
-    enabled:
-        # add a framework module here
-        - \Helper\Functional
+  enabled:
+    # add framework module here
+    - \Helper\Functional
+    - \Herloct\Codeception\Module\Slim:
+        container: tests/_support/AppContainer.php
+    - REST:
+        depends:   \Herloct\Codeception\Module\Slim
+  error_level: "E_ALL & ~E_STRICT & ~E_DEPRECATED"

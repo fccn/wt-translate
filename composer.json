@@ -10,17 +10,21 @@
         }
     ],
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=7.0",
         "slim/twig-view": "^2.3",
         "fccn/webapp-tools-common": "^1.0"
     },
     "autoload":{
       "psr-4": {
-        "Fccn\\Lib\\": "src"
+        "Fccn\\Lib\\": "src",
+        "Fccn\\WebComponents\\": "src/web_components"
       }
     },
     "require-dev": {
-        "codeception/codeception": "^2.3"
+        "codeception/codeception": "^2.3",
+        "herloct/codeception-slim-module": "^1.1",
+        "twig/extensions": "^1.5",
+        "slim/slim": "^3.9"
     },
     "autoload-dev": {
         "psr-4": {
