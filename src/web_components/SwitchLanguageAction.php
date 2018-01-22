@@ -37,16 +37,7 @@ class SwitchLanguageAction
         $select_method = SiteConfig::getInstance()->get("locale_selection");
         $locale = false;
         \Fccn\Lib\FileLogger::debug("SwitchLanguageAction - got language $lang");
-        #TODO if lang empty get from request attribute
-        foreach (\Fccn\Lib\SiteConfig::getInstance()->get("locales") as $locale) {
-            \Fccn\Lib\FileLogger::debug("SwitchLanguageAction - checking locale: ".print_r($locale, true));
-            if (strtoupper($lang) == strtoupper($locale["label"])) {
-                //set new locale
-                #$response = $this->setLocale($response, $locale["label"]);
-                $locale = $locale["label"];
-                break;
-            }
-        }
+
         #define redirect
         $redirect_url = SiteConfig::getInstance()->get("base_path") . "/";
         if ($request->hasHeader('HTTP_REFERER')) {
@@ -56,12 +47,17 @@ class SwitchLanguageAction
                 $redirect_url = $header[0];
             }
         }
-        //set new locale depending on select method
-        if (!empty($locale)) {
-            if ($select_method == 'param') {
-                $redirect_url = $this->setLocaleParam($redirect_url, $locale);
-            } else { //default to cookie
-                $response = $this->setLocaleCookie($response, $locale);
+        #TODO if lang empty get from request attribute
+        foreach (\Fccn\Lib\SiteConfig::getInstance()->get("locales") as $locale) {
+            \Fccn\Lib\FileLogger::debug("SwitchLanguageAction - checking locale: ".print_r($locale, true));
+            if (strtoupper($lang) == strtoupper($locale["label"])) {
+                //set new locale depending on select method
+                if ($select_method == 'param') {
+                    $redirect_url = $this->setLocaleParam($redirect_url, $locale["label"]);
+                } else { //default to cookie
+                    $response = $this->setLocaleCookie($response, $locale["locale"]);
+                }
+                break;
             }
         }
 
