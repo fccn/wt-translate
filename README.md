@@ -5,6 +5,8 @@ This presents a set of utilities for handling multilanguage and translations for
 
 The localization utilities also provides an utility to prepare and launch xgettext via Makefile and  integrates with the twig framework, via a twig filter and a utility for parsing twig templates into a format that is understandable by xgettext.
 
+The project also provides a set of web components the Slim framework: a Locale service, Localization middleware and a language switcher controller action.
+
 ## Installation
 
 You can install this collection in your project using composer:
@@ -17,7 +19,7 @@ To complete the installation copy the contents of the **locale** and **utils** f
 
 ### Locale folder
 
-The Makefile inside the locale folder prepares the content to be processed by xgettex and calls xgettext to build the .po and .mo files. It is configured to work inside the **locale** directory, looks for php code on **[project_root]/app** folder and the parsed twig templates on **[project_root]/cache**.
+The Makefile inside the locale folder prepares the content to be processed by xgettex and calls xgettext to build the .po and .mo files. It is configured to work inside the **locale** directory. It looks for php code on **[project_root]/app** folder and the parsed twig templates on **[project_root]/cache**.
 
 The header.po file is the base file for generating the individual .po files for each language. This file must be located in the **locale** folder.
 
@@ -39,6 +41,7 @@ If you use Twig in your web application, there will be a point where it is neces
 The localization utilities were designed with the [FCCN's webapp skeleton project](https://github.com/fccn/webapp-skeleton.git) in mind. For this reason the script to build the .po and .mo files will search for the web application code in **[project_root]/app** folder. If your application's code is stored on another location you need to edit the **[project_root]/locale/Makefile** before using the Gettext utilities.
 
 The localization utilities makes use of the site configuration loader from the [Webapp Tools - common](https://github.com/fccn/wt-common) project. The following key-value pairs need to be added to the application configuration file *$c* array:
+
 ```php
 $c = array(
     ...
@@ -62,13 +65,28 @@ $c = array(
     "request_attribute_name" => "locale", #name of the request attribute to store locale info
 
     #-twig parser configurations
-    "twig_parser_templates_path" => "../templates",   #path for twig templates folder, can be an array
+    "twig_parser_templates_path" => "../templates",   #path for twig templates folder, can be an array if you are importing templates from other projects
     "twig_parser_cache_path" => "../cache",            #path for cache folder
     ...
   )
 ```
 
-when configuring with twig, you need to load the same twig extensions and filters used by the web application into the twig parser. This prevents missinterpretations when parsing the twig templates. To do that edit **[project_root]/utils/TwigConfigLoader.php** and add the filters and extensions to the *loadConfigs* function:
+The twig parser supports multiple twig templates folder. You can setup multiple folders as shown below:
+
+```php
+
+$c = array(
+    ...
+    twig_parser_templates_path =>  array(
+      0 => __DIR__ . '/../templates', //set the base template path
+      //add other namespaces to twig, in the form of 'namespace' => 'path/to/twig/templates'
+    ),
+    ...
+  );
+```
+
+When configuring with twig, you need to load the same twig extensions and filters used by the web application into the twig parser. This prevents missinterpretations when parsing the twig templates. To do that edit **[project_root]/utils/TwigConfigLoader.php** and add the filters and extensions to the *loadConfigs* function:
+
 ```php
   public function loadConfigs($twig){
     ....
@@ -85,37 +103,61 @@ when configuring with twig, you need to load the same twig extensions and filter
     ...
   }
 ```
+
 You can also use preset configuration loaders like the one defined in **src/TranslateConfigurationLoader.php**. The *loadConfigs()* function in **[project_root]/utils/TwigConfigLoader.php** already loads the following set of filters and extensions for localization utilities:
 - Twig_Extensions_Extension_I18n - Twig internationalization extension
 - Twig_Extensions_Extension_Intl - Twig date and time localization extension
 - Translate filter
 
-To include the localization utilities into a Slim middleware, you can do like in the example below:
+### Integration with Slim
+
+ To enable global access to locale information you can add an instance of Fccn\Lib\Locale as a service - the Locale service - to your Slim application. The example below shows how to add the service to the Slim container and create a global *lang* variable in the view:
+
+```php
+
+$app = new \Slim\App(...);
+
+// Fetch DI Container
+$container = $app->getContainer();
+
+$container['locale'] = function ($cnt) {
+    $locale = new Fccn\Lib\Locale();
+    //add global lang var
+    $cnt->view->getEnvironment()->addGlobal('lang', $locale);
+    return $locale;
+};
+```
+
+The localization utilities provides a Slim middleware to add localization to your web application - the Localization middleware. This middleware uses the Locale service described above. For a better integration you need to configure the Locale with middleware integration. The example below shows how to add the Localization middleware to the Slim application:
+
 ```php
 
 $app = new \Slim\App();
 
-$app->add(function ($request, $response, $next) {
-  $locale = new \Fccn\Lib\Locale();
-  $locale->init();
-	$response = $next($request, $response);
-	return $response;
-});
+//get container
+$container = $app->getContainer();
 
+//Create the locale service
+
+$container['locale'] = function ($cnt) {
+    //set Locale to middleware integration
+    $locale = new Fccn\Lib\Locale(array('slim_middleware' => true));
+    //add global lang var
+    $cnt->view->getEnvironment()->addGlobal('lang', $locale);
+    return $locale;
+};
+
+//Add locale middleware
+$app->add(new Fccn\WebComponents\LocaleMiddleware($container['locale']));
 ```
 
-The twig parser also supports multiple twig templates folder. An example setup with multiple folders is shown below:
+To switch between languages you can use the language switcher controller action. The path for selecting a new language must be defined as ```<site_url>/<path>/{lang}``` where *lang* is the language label (case insensitive) defined in the locales array in the configuration file (*i.e. mysite.pt/setlang/pt, sets language to Portuguese*). The following example shows how to define the language switching route for the path ```<site_url>/utils/setlang/{lang}``` with the language switcher controller action:
 
 ```php
 
-$c = array(
-    ...
-    twig_parser_templates_path =>  array(
-      0 => __DIR__ . '/../templates', //set the base template path
-      //add other namespaces to twig, in the form of 'namespace' => 'path/to/twig/templates'
-    ),
-    ...
-  );
+$app = new \Slim\App();
+
+$app->get('/utils/setlang/{lang}', Fccn\WebComponents\SwitchLanguageAction::class);
 ```
 
 ### Adding more languages
