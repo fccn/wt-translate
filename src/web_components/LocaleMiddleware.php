@@ -25,6 +25,7 @@ class LocaleMiddleware
     protected $locale_cookie_path;
     protected $locale_cookie_expire;
     protected $req_attr_name;
+    protected $verbose_debug;
     protected $locale;
 
     /*
@@ -38,6 +39,7 @@ class LocaleMiddleware
         $this->locale_cookie_path = SiteConfig::getInstance()->get("locale_cookie_path");
         $this->locale_cookie_expire = Locale::calculateCookieExpire(3600 * 24 * 30); // 30 days
         $this->req_attr_name = SiteConfig::getInstance()->get("request_attribute_name");
+        $this->verbose_debug = SiteConfig::getInstance()->get("verbose_debug", false);
         $this->locale = $locale;
     }
 
@@ -53,7 +55,9 @@ class LocaleMiddleware
     public function __invoke(Request $req, Response $resp, callable $next)
     {
         $current_locale = $this->getLocale($req);
-        FileLogger::debug("LocaleMiddleware::invoke with locale ".print_r($current_locale, true));
+        if ($this->verbose_debug) {
+            FileLogger::debug("LocaleMiddleware::invoke with locale ".print_r($current_locale, true));
+        }
         $req = $req->withAttribute($this->req_attr_name, $current_locale);
         #add cookie
         $resp = $resp->withHeader(
@@ -70,18 +74,26 @@ class LocaleMiddleware
     {
         //try to read from param first
         $curr_locale = $this->localeFromParam($req);
-        FileLogger::debug("LocaleMiddleware::getLocale - from param: ".print_r($curr_locale, true));
+        if ($this->verbose_debug) {
+            FileLogger::debug("LocaleMiddleware::getLocale - from param: ".print_r($curr_locale, true));
+        }
         if (empty($curr_locale)) {
             //then read from cookie
             $curr_locale = $this->localeFromCookie($req);
-            FileLogger::debug("LocaleMiddleware::getLocale - from cookie: ".print_r($curr_locale, true));
+            if ($this->verbose_debug) {
+                FileLogger::debug("LocaleMiddleware::getLocale - from cookie: ".print_r($curr_locale, true));
+            }
         }
         if (empty($curr_locale)) {
             //then read from header
             $curr_locale = $this->localeFromHeader($req);
-            FileLogger::debug("LocaleMiddleware::getLocale - from header: ".print_r($curr_locale, true));
+            if ($this->verbose_debug) {
+                FileLogger::debug("LocaleMiddleware::getLocale - from header: ".print_r($curr_locale, true));
+            }
         }
-        FileLogger::debug("LocaleMiddleware::getLocale - returning locale: ".print_r($curr_locale, true));
+        if ($this->verbose_debug) {
+            FileLogger::debug("LocaleMiddleware::getLocale - returning locale: ".print_r($curr_locale, true));
+        }
         return $curr_locale;
     }
 

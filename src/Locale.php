@@ -94,7 +94,10 @@ class Locale
     {
         $current_lang = $this->getCurrentLang();
         $locale = $current_lang.".utf8";
-        FileLogger::debug('Locale::init() - current locale is '.$locale);
+        $verbose_debug = SiteConfig::getInstance()->get("verbose_debug", false);
+        if ($verbose_debug) {
+            FileLogger::debug('Locale::init() - current locale is '.$locale);
+        }
         // Set language to Current Language
         $results = putenv('LANG=' . $locale);
         if (!$results) {
@@ -107,13 +110,19 @@ class Locale
 
         // Specify the location of the translation tables
         $results = bindtextdomain(SiteConfig::getInstance()->get("locale_textdomain"), SiteConfig::getInstance()->get("locale_path"));
-        FileLogger::debug("Locale::init() - new text domain is set: $results");
+        if ($verbose_debug) {
+            FileLogger::debug("Locale::init() - new text domain is set: $results");
+        }
         $results = bind_textdomain_codeset(SiteConfig::getInstance()->get("locale_textdomain"), 'UTF-8');
-        FileLogger::debug("Locale::init() - new text domain codeset is: $results");
+        if ($verbose_debug) {
+            FileLogger::debug("Locale::init() - new text domain codeset is: $results");
+        }
 
         // Choose domain
         $results = textdomain(SiteConfig::getInstance()->get("locale_textdomain"));
-        FileLogger::debug("Locale::init() - current message domain is set: $results");
+        if ($verbose_debug) {
+            FileLogger::debug("Locale::init() - current message domain is set: $results");
+        }
     }
 
     /*

@@ -67,6 +67,8 @@ $c = array(
     #-twig parser configurations
     "twig_parser_templates_path" => "../templates",   #path for twig templates folder, can be an array if you are importing templates from other projects
     "twig_parser_cache_path" => "../cache",            #path for cache folder
+    #activate verbose debug for debugging purposes (defaults to false)
+    "verbose_debug" => false,
     ...
   )
 ```
